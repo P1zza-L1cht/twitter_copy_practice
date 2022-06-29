@@ -48,11 +48,11 @@ export default function Sidebar() {
         {/* Mini-profile */}
 
         <div className=" text-gray-700 flex items-center justify-center xl:justify-start mt-auto">
-          {/* <img 
-            src="" 
-            alt=""
+          <img 
+            src="https://jmva.or.jp/wp-content/uploads/2018/07/noimage.png" 
+            alt="user-iamge"
             className="h-10 w-10 rounded-full"
-          /> */}
+          />
           <div className='leading-5 hidden xl:inline'>
             <h4 className='font-bold '>Haruki Yui</h4>
             <p className='text-grey-500'>@code.licht</p>
