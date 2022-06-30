@@ -1,16 +1,21 @@
-import { EmojiHappyIcon, PhotographIcon } from "@heroicons/react/outline";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { EmojiHappyIcon, PhotographIcon, XIcon } from "@heroicons/react/outline";
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useRef } from 'react';
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 
 export default function Input() {
   const {data: session} = useSession();
   const [input, setInput] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const filePickerRef = useRef(null);
 
   const sendPost = async () => {
+    if(loading) return;
+    setLoading(true);
+
     const docRef = await addDoc(collection(db, "posts"), {
       id: session.user.uid,
       text: input,
@@ -21,14 +26,18 @@ export default function Input() {
     });
 
     const imageRef = ref(storage, `post/${docRef.id}/image`);
-
-    if(setSelectedFile){
+    if(selectedFile){
       await uploadString(imageRef, selectedFile, "data_url").then(async()=>{
-        const downloadURL = await getDownloadURL(imageRef, selectedFile);
+        const downloadURL = await getDownloadURL(imageRef);
+        await updateDoc(doc(db, "posts", docRef.id), {
+          image: downloadURL,
+        })
       })
     }
 
     setInput("");
+    setSelectedFile(null);
+    setLoading(false);
   };
 
   const addImageToPost = (e) => {
@@ -62,10 +71,18 @@ export default function Input() {
             onChange={(e) => setInput(e.target.value)}
           ></textarea>
         </div>
+        {selectedFile && (
+          <div className="relative">
+            <XIcon onClick={() => setSelectedFile(null)} className="h-5 text-white absolute cursor-pointer shadow-md shadow-white rounded-full" />
+            <img src={selectedFile} className={`${loading && "animate-pulse"}`} alt="" />
+          </div>
+        )}
         <div className="flex items-center justify-between pt-2.5">
-          <div className="flex ">
-            <div 
-              className="" 
+          {!loading && (
+          <>
+          <div className="flex">
+            <div
+              className=""
               onClick={() => filePickerRef.current.click()}
             >
               <PhotographIcon className="h-10 w-10 hoverEffect p-2 text-sky-500 hover:bg-sky-100 " />
@@ -85,6 +102,8 @@ export default function Input() {
           >
             Tweet
           </button>
+          </>
+          )}
         </div>
       </div>
     </div>
