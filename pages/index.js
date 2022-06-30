@@ -31,8 +31,6 @@ export default function Home({newsResults}) {
 }
 
 
-//https://saurav.tech/NewsAPI/top-headlines/category/technology/us.json
-//5c0e27f4e34740f9a7ee447b4f1bcf29
 //https://newsapi.org/v2/top-headlines?country=jp&apiKey=5c0e27f4e34740f9a7ee447b4f1bcf29
 
 
@@ -40,8 +38,9 @@ export async function getServerSideProps() {
   const newsResults = await fetch(
     "https://newsapi.org/v2/top-headlines?country=jp&apiKey=5c0e27f4e34740f9a7ee447b4f1bcf29"
   ).then((res) => res.json());
+
   return{
-    props:{
+    props: {
       newsResults,
     },
   };
