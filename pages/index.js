@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar';
 import Widgets from '../components/Widgets';
 
 
-export default function Home({newsResults}) {
+export default function Home({newsResults, randomUsersResults}) {
   return (
     <div>
       <Head>
@@ -21,7 +21,7 @@ export default function Home({newsResults}) {
         <Feed />
 
         {/* widgets */}
-        <Widgets newsResults={newsResults} />
+        <Widgets newsResults={newsResults} randomUsersResults={randomUsersResults}/>
 
         {/* modal */}
       </main>
@@ -39,9 +39,14 @@ export async function getServerSideProps() {
     "https://newsapi.org/v2/top-headlines?country=jp&apiKey=5c0e27f4e34740f9a7ee447b4f1bcf29"
   ).then((res) => res.json());
 
+  const randomUsersResults = await fetch(
+    "https://randomuser.me/api/?results=30&inc=name,login,picture"
+  ).then((res) => res.json());
+
   return{
     props: {
       newsResults,
+      randomUsersResults,
     },
   };
 }
