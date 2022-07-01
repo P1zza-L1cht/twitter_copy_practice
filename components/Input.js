@@ -54,7 +54,7 @@ export default function Input() {
   return (
     <>
     {session && (
-      <div className="flex border-b border-grey-200 p-3 space-x-3">
+      <div className="flex border-b border-gray-200 p-3 space-x-3">
       <img
         onClick={signOut}
         src={session.user.image}
