@@ -4,9 +4,10 @@ import Modal from "react-modal";
 import { XIcon, PhotographIcon, EmojiHappyIcon } from "@heroicons/react/outline";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { doc, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, doc, onSnapshot, serverTimestamp } from "firebase/firestore";
 import Moment from "react-moment";
 import { useSession } from "next-auth/react";
+import { async } from "@firebase/util";
 
 export default function CommentModal() {
   const [open, setOpen] = useRecoilState(modalState);
@@ -21,8 +22,17 @@ export default function CommentModal() {
     });
   }, [postId]);
 
-  function sendComment() {
+  async function sendComment() {
+    await addDoc(collection(db, "posts", postId, "comments"), {
+      comment: input,
+      name: session.user.name,
+      username: session.user.username,
+      userImage: session.user.image,
+      timestamp: serverTimestamp(),
+    });
 
+    setOpen(false);
+    setInput("");
   }
 
   return (
@@ -67,7 +77,7 @@ export default function CommentModal() {
                   <textarea
                     className="w-full border-none focus:ring-0 text-lg placeholder-gray-700 tracking-wide min-h-[50px] text-gray-700"
                     rows="2"
-                    placeholder="返信する"
+                    placeholder="コメントする"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                   ></textarea>
