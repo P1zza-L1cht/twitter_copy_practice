@@ -16,6 +16,7 @@ import {
 import { db } from "../../firebase";
 import { comment } from "postcss";
 import Comment from "../../components/Comment";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function PostPage({newsResults, randomUsersResults}) {
   const router = useRouter();
@@ -64,14 +65,24 @@ export default function PostPage({newsResults, randomUsersResults}) {
 
           {comments.length > 0 && (
             <div className="">
-            {comments.map((comment) => (
-              <Comment
+              <AnimatePresence>
+              {comments.map((comment) => (
+              <motion.div
                 key={comment.id}
-                commentId={comment.id}
-                originalPostId={id}
-                comment={comment.data()}
-              />
-            ))}
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+                transition={{duration: 1}}
+              >
+                <Comment
+                  key={comment.id}
+                  commentId={comment.id}
+                  originalPostId={id}
+                  comment={comment.data()}
+                />
+              </motion.div>
+              ))}
+              </AnimatePresence>
             </div>
           )}
         </div>
@@ -86,9 +97,6 @@ export default function PostPage({newsResults, randomUsersResults}) {
     </div>
   )
 }
-
-
-//https://newsapi.org/v2/top-headlines?country=jp&apiKey=5c0e27f4e34740f9a7ee447b4f1bcf29
 
 
 export async function getServerSideProps() {
