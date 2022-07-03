@@ -1,7 +1,11 @@
-import Head from 'next/head'
+import Head from 'next/head';
+import CommentModal from '../components/CommentModal';
+import Feed from '../components/Feed';
+import Sidebar from '../components/Sidebar';
+import Widgets from '../components/Widgets';
 
 
-export default function Home() {
+export default function Home({newsResults, randomUsersResults}) {
   return (
     <div>
       <Head>
@@ -10,7 +14,41 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>Hello World</h1>
+      <main className='flex min-h-screen mx-auto '>
+        {/* Sidebar */}
+        <Sidebar/>
+
+        {/* feed */}
+        <Feed />
+
+        {/* widgets */}
+        <Widgets newsResults={newsResults} randomUsersResults={randomUsersResults}/>
+
+        {/* modal */}
+        <CommentModal />
+      </main>
+
     </div>
   )
+}
+
+
+//https://newsapi.org/v2/top-headlines?country=jp&apiKey=5c0e27f4e34740f9a7ee447b4f1bcf29
+
+
+export async function getServerSideProps() {
+  const newsResults = await fetch(
+    "https://newsapi.org/v2/top-headlines?country=jp&apiKey=5c0e27f4e34740f9a7ee447b4f1bcf29"
+  ).then((res) => res.json());
+
+  const randomUsersResults = await fetch(
+    "https://randomuser.me/api/?results=30&inc=name,login,picture"
+  ).then((res) => res.json());
+
+  return{
+    props: {
+      newsResults,
+      randomUsersResults,
+    },
+  };
 }
